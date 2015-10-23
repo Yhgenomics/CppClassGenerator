@@ -28,15 +28,15 @@ namespace CppClassGenerator
         {
             DirectoryInfo templetFolder = new DirectoryInfo(templatePath);
             allMsgNames = new List<string>();
+            casesList = new List<string>();
+
 
             // Search in the templatePath
             foreach ( FileInfo NextFile in templetFolder.GetFiles( "*.json" ) )
             {
                 userHdl = new List<string>();
-
+                oneCaseLine = string.Empty;
                 FilesManipulate( NextFile );
-
-                CreateMessageHandlerFile( className );
 
                 // Read the templet file and put it in the List<MeatItem>
                 List<MetaItem> classDefine = GetTemplate( templetFolder );
@@ -45,6 +45,8 @@ namespace CppClassGenerator
                 indent = 0;
 
                 BeginHeader( messageFile );
+
+                CreateMessageHandlerFile( className );
 
                 BeginNamespace();
 
@@ -74,18 +76,29 @@ namespace CppClassGenerator
                 EndNamespace();
                 EndHeader();
 
+                oneCaseLine = "    return " + className + "Handler( " + className + "( message ) );" + myNewLine;
+                casesList.Add( oneCaseLine );
+                oneCaseLine = "    break;" + myNewLine;
+                casesList.Add( oneCaseLine );
+                oneCaseLine = myNewLine;
+                casesList.Add( oneCaseLine );
             } // End of search in the templatePath
 
-            WriteBigMsgHandlerFile();
+            WriteBigMessagesHandlerFile();
         }
 
-        private static void WriteBigMsgHandlerFile()
+        private static void WriteBigMessagesHandlerFile()
         {
+
             if ( File.Exists( msgHdlFile ) )
             {
                 File.Delete( msgHdlFile );
             }
             int MsgHdlIndent = 0;
+            AppendInFile( msgHdlFile , "#ifndef MESSAGES_HANDLER_HPP_" + myNewLine , MsgHdlIndent );
+            AppendInFile( msgHdlFile , "#define MESSAGES_HANDLER_HPP_" + myNewLine , MsgHdlIndent );
+            AppendInFile( msgHdlFile , myNewLine , MsgHdlIndent );
+
             AppendInFile( msgHdlFile , "#include \"stdlib.h\"" + myNewLine , MsgHdlIndent );
             foreach ( string msgName in allMsgNames )
             {
@@ -96,48 +109,62 @@ namespace CppClassGenerator
             AppendInFile( msgHdlFile , "namespace " + namespaceString + myNewLine , MsgHdlIndent );
             AppendInFile( msgHdlFile , "{" + myNewLine , MsgHdlIndent );
             MsgHdlIndent++;
-            AppendInFile( msgHdlFile , "class MsgHandler" + myNewLine , MsgHdlIndent );
+            AppendInFile( msgHdlFile , "class MessagesHandler" + myNewLine , MsgHdlIndent );
             AppendInFile( msgHdlFile , "{" + myNewLine , MsgHdlIndent );
 
             AppendInFile( msgHdlFile , "public:" + myNewLine , MsgHdlIndent );
             AppendInFile( msgHdlFile , myNewLine , MsgHdlIndent );
             MsgHdlIndent++;
-
-            foreach ( string msgName in allMsgNames )
+            
+            AppendInFile( msgHdlFile , "static int process( Message* message )" + myNewLine , MsgHdlIndent );
+            AppendInFile( msgHdlFile , "{" + myNewLine , MsgHdlIndent );
+            MsgHdlIndent++;
+            AppendInFile( msgHdlFile , "switch ( message->command() )" + myNewLine , MsgHdlIndent );
+            AppendInFile( msgHdlFile , "{" + myNewLine , MsgHdlIndent );
+            MsgHdlIndent++;
+            foreach ( string aCase in casesList )
             {
-                AppendInFile( msgHdlFile , "static int process( " + msgName + " msg )" + myNewLine , MsgHdlIndent );
-                AppendInFile( msgHdlFile , "{" + myNewLine , MsgHdlIndent );
-                MsgHdlIndent++;
-                AppendInFile( msgHdlFile , "return "+msgName + "Handler( msg );" + myNewLine , MsgHdlIndent );
-                
-                MsgHdlIndent--;
-                AppendInFile( msgHdlFile , "}" + myNewLine , MsgHdlIndent );
-                AppendInFile( msgHdlFile , myNewLine , MsgHdlIndent );
+                AppendInFile( msgHdlFile , aCase , MsgHdlIndent );
             }
+            AppendInFile( msgHdlFile , "default:" + myNewLine , MsgHdlIndent );
+            AppendInFile( msgHdlFile , "    return -1;" + myNewLine , MsgHdlIndent );
+            AppendInFile( msgHdlFile , "    break;" + myNewLine , MsgHdlIndent );
+            MsgHdlIndent--;
+            AppendInFile( msgHdlFile , "} // End of switch" + myNewLine , MsgHdlIndent );
+            AppendInFile( msgHdlFile , myNewLine , MsgHdlIndent );
+
+            MsgHdlIndent--;
+            AppendInFile( msgHdlFile , "} // End of static int process" + myNewLine , MsgHdlIndent );
+            AppendInFile( msgHdlFile , myNewLine , MsgHdlIndent );
 
             MsgHdlIndent--;
 
-            AppendInFile( msgHdlFile , @"}; // End of class define of MsgHandler" + myNewLine , MsgHdlIndent );
+            AppendInFile( msgHdlFile , @"}; // End of class define of MessagesHandler" + myNewLine , MsgHdlIndent );
             AppendInFile( msgHdlFile , myNewLine , MsgHdlIndent );
 
             MsgHdlIndent--;
             AppendInFile( msgHdlFile , @"} // End of namespace " + namespaceString + myNewLine , MsgHdlIndent );
-            
+            AppendInFile( msgHdlFile , "#endif" + myNewLine , MsgHdlIndent );
+
         }
 
         private static void CreateMessageHandlerFile( string className )
         {
             string handlerName = className+ "Handler";
             int handlerFileIndent = 0;
+            AppendInFile( handlerFile , "#ifndef " + headerPrefix+"_HANDLER_HPP_" + myNewLine , handlerFileIndent );
+            AppendInFile( handlerFile , "#define " + headerPrefix + "_HANDLER_HPP_" + myNewLine , handlerFileIndent );
+            AppendInFile( handlerFile , myNewLine , handlerFileIndent );
+
             AppendInFile( handlerFile , "#include \"stdlib.h\"" + myNewLine , handlerFileIndent );
-            AppendInFile( handlerFile , "#include \"" + className + ".h\"" + myNewLine , handlerFileIndent );
+            AppendInFile( handlerFile , "#include \"" + className + ".hpp\"" + myNewLine , handlerFileIndent );
 
             AppendInFile( handlerFile , myNewLine , handlerFileIndent );
 
             AppendInFile( handlerFile , "namespace " + namespaceString + myNewLine , handlerFileIndent );
             AppendInFile( handlerFile , "{" + myNewLine , handlerFileIndent );
             handlerFileIndent++;
-           
+
             AppendInFile( handlerFile , "static int " + handlerName + "( " + className + " msg )" + myNewLine , handlerFileIndent );
             AppendInFile( handlerFile , "{" + myNewLine , handlerFileIndent );
             handlerFileIndent++;
@@ -148,6 +175,7 @@ namespace CppClassGenerator
                 AppendInFile( handlerFile , @"// Your Codes here!" + myNewLine , handlerFileIndent );
                 AppendInFile( handlerFile , @"return 0;" + myNewLine , handlerFileIndent );
             }
+
             else
             {
                 foreach ( string usercodes in userHdl )
@@ -165,11 +193,13 @@ namespace CppClassGenerator
             handlerFileIndent--;
             AppendInFile( handlerFile , @"} // End of namespace " + namespaceString + myNewLine , handlerFileIndent );
 
+            AppendInFile( handlerFile , "#endif // !" + headerPrefix + "_HANDLER_HPP_" + myNewLine , handlerFileIndent );
+
         }
 
         private static void EndHeader()
         {
-            AppendInFile( messageFile , "#endif " + myNewLine , indent );
+            AppendInFile( messageFile , "#endif // !" + headerPrefix + "_HPP_" + myNewLine , indent );
         }
 
         private static void EndNamespace()
@@ -254,11 +284,11 @@ namespace CppClassGenerator
                 // Constructor from a json string
                 AppendInFile( messageFile , @"// Deserilize Constructor" + myNewLine , indent );
                 context = className + "( "
-                    + "string jsonBuffer"
+                    + "Message* message"
                     + " )" + myNewLine;
                 AppendInFile( messageFile , context , indent );
 
-                AppendInFile( messageFile , "    : Message( jsonBuffer )" + myNewLine , indent );
+                AppendInFile( messageFile , "    : Message( *message )" + myNewLine , indent );
 
                 AppendInFile( messageFile , "{" + myNewLine , indent );
                 indent++;
@@ -289,8 +319,6 @@ namespace CppClassGenerator
                 // Skip the members in the base class, Message
                 if ( item.name.Equals( "command" )
                   || item.name.Equals( "status" )
-                  || item.name.Equals( "from" )
-                  || item.name.Equals( "to" )
                    )
                 {
                     if ( messageValues.Equals( string.Empty ) )
@@ -300,6 +328,11 @@ namespace CppClassGenerator
                     else
                     {
                         messageValues += ", " + item.value;
+                    }
+                    if ( item.name.Equals( "command" ) )
+                    {
+                        oneCaseLine = "case " + item.value + ":" + myNewLine;
+                        casesList.Add( oneCaseLine );
                     }
                     continue;
                 } // End of Skip the members in the base class, Message
@@ -395,7 +428,7 @@ namespace CppClassGenerator
 
                 handlerReader.Close();//关闭文件读取流
 
-            File.Delete( handlerFile );
+                File.Delete( handlerFile );
             }
         }
 
@@ -435,7 +468,8 @@ namespace CppClassGenerator
                     header += '_';
                 }
             }
-            header += "_HPP";
+            headerPrefix = header;
+            header += "_HPP_";
 
             context = header.ToUpper();
             AppendInFile( hppfile , "#ifndef " + context + myNewLine );
@@ -447,10 +481,6 @@ namespace CppClassGenerator
             AppendInFile( hppfile , "#include <stdlib.h>" + myNewLine );
             AppendInFile( hppfile , "#include <iostream>" + myNewLine );
             AppendInFile( hppfile , "#include <fstream>" + myNewLine );
-            AppendInFile( hppfile , "#include <fstream>" + myNewLine );
-            AppendInFile( hppfile , myNewLine );
-
-            AppendInFile( hppfile , "using json = nlohmann::json" + myNewLine );
             AppendInFile( hppfile , myNewLine );
         }
 
@@ -492,18 +522,21 @@ namespace CppClassGenerator
             }
         }
 
-        public static string jsonString      = string.Empty;
-        public static string myNewLine       = "\r\n";
-        public static string namespaceString = @"Message";
-        public static string jsonFile        = string.Empty;
-        public static string messageFile     = string.Empty;
-        public static string handlerFile     = string.Empty;
-        public static string className       = string.Empty;
-        public static string templatePath    = string.Empty;
-        public static string context         = string.Empty;
-        public static int    indent          = 0;
-        public static List<string> userHdl   = null;
-        public static List<string> allMsgNames    = null;
-        public static string msgHdlFile      = @"MsgHandler.hpp";
+        public static string jsonString        = string.Empty;
+        public static string myNewLine         = "\r\n";
+        public static string namespaceString   = @"Protocol";
+        public static string jsonFile          = string.Empty;
+        public static string messageFile       = string.Empty;
+        public static string handlerFile       = string.Empty;
+        public static string className         = string.Empty;
+        public static string templatePath      = string.Empty;
+        public static string context           = string.Empty;
+        public static int    indent            = 0;
+        public static List<string> userHdl     = null;
+        public static List<string> allMsgNames = null;
+        public static string msgHdlFile        = @"MessagesHandler.hpp";
+        public static List<string> casesList   = null;
+        public static string oneCaseLine       = null;
+        public static string headerPrefix      = string.Empty;
     } // End of Class program
 }
