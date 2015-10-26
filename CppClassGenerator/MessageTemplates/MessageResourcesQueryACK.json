@@ -1,0 +1,37 @@
+  [    
+    {
+      "name": "command",
+      "type": "size_t",
+      "value": "112"
+    },
+    {
+      "name": "status",
+      "type": "size_t",
+      "value": "0"
+    },
+    {
+      "name": "cpu",
+      "type": "string",
+      "value": "not clear"
+    },
+    {
+      "name": "cpufrequency",
+      "type": "string",
+      "value": "not clear"
+    },
+    {
+      "name": "ram",
+      "type": "string",
+      "value": "not clear"
+    },
+    {
+      "name": "gpu",
+      "type": "string",
+      "value": "not clear"
+    },
+    {
+      "name": "video_ram",
+      "type": "string",
+      "value": "not clear"
+    }
+  ]

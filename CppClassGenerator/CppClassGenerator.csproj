@@ -52,6 +52,21 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="MessageTemplates\MessageExceptionReport.json" />
+    <None Include="MessageTemplates\MessageHeartBeat.json" />
+    <None Include="MessageTemplates\MessageProcessAbilityQuery.json" />
+    <None Include="MessageTemplates\MessageProcessAbilityQueryACK.json" />
+    <None Include="MessageTemplates\MessageResourcesQuery.json" />
+    <None Include="MessageTemplates\MessageResourcesQueryACK.json" />
+    <None Include="MessageTemplates\MessageStatusReport.json" />
+    <None Include="MessageTemplates\MessageTaskCancel.json" />
+    <None Include="MessageTemplates\MessageTaskContinue.json" />
+    <None Include="MessageTemplates\MessageTaskDeliver.json" />
+    <None Include="MessageTemplates\MessageTaskDeliverACK.json" />
+    <None Include="MessageTemplates\MessageTaskPause.json" />
+    <None Include="MessageTemplates\MessageTaskQuery.json" />
+    <None Include="MessageTemplates\MessageTaskQueryACK.json" />
+    <None Include="MessageTemplates\MessageTaskRestart.json" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

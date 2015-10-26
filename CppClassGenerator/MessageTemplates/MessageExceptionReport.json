@@ -1,0 +1,17 @@
+  [    
+    {
+      "name": "command",
+      "type": "size_t",
+      "value": "151"
+    },
+    {
+      "name": "status",
+      "type": "size_t",
+      "value": "0"
+    },
+    {
+      "name": "exception_content",
+      "type": "string",
+      "value": ""
+    }
+  ]

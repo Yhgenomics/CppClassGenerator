@@ -1,0 +1,17 @@
+  [    
+    {
+      "name": "command",
+      "type": "size_t",
+      "value": "143"
+    },
+    {
+      "name": "status",
+      "type": "size_t",
+      "value": "0"
+    },
+    {
+      "name": "task_id",
+      "type": "string",
+      "value": ""
+    }
+  ]

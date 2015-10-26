@@ -1,0 +1,38 @@
+  [    
+    {
+      "name": "command",
+      "type": "size_t",
+      "value": "131"
+    },
+    {
+      "name": "status",
+      "type": "size_t",
+      "value": "0"
+    },
+    {
+      "name": "task_id",
+      "type": "string",
+      "value": ""
+    },
+    {
+      "name": "cpu",
+      "type": "string",
+      "value": ""
+    },
+    {
+      "name": "ram",
+      "type": "string",
+      "value": ""
+    },
+    {
+      "name": "command_lines",
+      "type": "string",
+      "value": ""
+    },
+    {
+      "name": "uri",
+      "type": "string",
+      "value": ""
+    }
+
+  ]

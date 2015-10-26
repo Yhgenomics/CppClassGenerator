@@ -317,8 +317,8 @@ namespace CppClassGenerator
                 FixStringType( item );
 
                 // Skip the members in the base class, Message
-                if ( item.name.Equals( "command" )
-                  || item.name.Equals( "status" )
+                if ( item.name.ToLower().Equals( "command" )
+                  || item.name.ToLower().Equals( "status" )
                    )
                 {
                     if ( messageValues.Equals( string.Empty ) )
@@ -329,7 +329,7 @@ namespace CppClassGenerator
                     {
                         messageValues += ", " + item.value;
                     }
-                    if ( item.name.Equals( "command" ) )
+                    if ( item.name.ToLower().Equals( "command" ) )
                     {
                         oneCaseLine = "case " + item.value + ":" + myNewLine;
                         casesList.Add( oneCaseLine );
@@ -340,7 +340,7 @@ namespace CppClassGenerator
                 AddGetter( item );
                 AddSetter( item );
 
-                privateMembers.Add( item.type + " " + item.name + "_;" + myNewLine );
+                privateMembers.Add( item.type + " " + item.name.ToLower() + "_;" + myNewLine );
                 deserilizeParts.Add( "this->" + item.name.ToLower() + "_ = raw_data_[ \"data\" ][ \"" + item.name + "\" ].get<" + item.type + ">();" + myNewLine );
                 ConstructorContext.Add( item.name + "( " + item.value + " );" + myNewLine );
 
@@ -359,7 +359,7 @@ namespace CppClassGenerator
         private static void AddSetter( MetaItem item )
         {
             AppendInFile( messageFile , @"// Setter of " + item.name.ToLower() + "_" + myNewLine , indent );
-            AppendInFile( messageFile , "void " + item.name.ToLower() + "( " + item.type + " value )" + myNewLine , indent );
+            AppendInFile( messageFile , "void " + item.name+ "( " + item.type + " value )" + myNewLine , indent );
             AppendInFile( messageFile , "{" + myNewLine , indent );
             indent++;
             AppendInFile( messageFile , item.name.ToLower() + "_ = value;" + myNewLine , indent );
@@ -372,7 +372,7 @@ namespace CppClassGenerator
         private static void AddGetter( MetaItem item )
         {
             AppendInFile( messageFile , @"// Getter of " + item.name.ToLower() + "_" + myNewLine , indent );
-            AppendInFile( messageFile , item.type + " " + item.name.ToLower() + "()" + myNewLine , indent );
+            AppendInFile( messageFile , item.type + " " + item.name+ "()" + myNewLine , indent );
             AppendInFile( messageFile , "{" + myNewLine , indent );
             indent++;
             AppendInFile( messageFile , "return " + item.name.ToLower() + "_;" + myNewLine , indent );
